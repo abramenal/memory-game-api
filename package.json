@@ -1,0 +1,53 @@
+{
+  "name": "memory-game-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "engines": {
+    "node": ">=12"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/local.ts",
+    "start": "node ./dist/bin/cli.js",
+    "lint": "eslint . --ext=ts",
+    "postinstall": "husky install",
+    "test": "jest",
+    "test:coverage": "jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abramenal/memory-game-api.git"
+  },
+  "author": "abramenal <pavel.auramenka@gmail.com>",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/abramenal/memory-game-api/issues"
+  },
+  "homepage": "https://github.com/abramenal/memory-game-api#readme",
+  "devDependencies": {
+    "@babel/core": "^7.12.17",
+    "@babel/preset-env": "^7.12.17",
+    "@babel/preset-typescript": "^7.12.17",
+    "@tsconfig/node14": "^1.0.0",
+    "@types/jest": "^26.0.20",
+    "@types/node": "^14.14.28",
+    "@typescript-eslint/eslint-plugin": "^4.15.1",
+    "@typescript-eslint/parser": "^4.15.1",
+    "babel-jest": "^26.6.3",
+    "eslint": "^7.20.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.3.1",
+    "husky": "^5.0.9",
+    "jest": "^26.6.3",
+    "prettier": "^2.2.1",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.5"
+  },
+  "dependencies": {
+    "yargs": "^16.2.0"
+  }
+}
