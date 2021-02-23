@@ -9,8 +9,10 @@
   },
   "scripts": {
     "build": "tsc",
+    "db:migrate:make": "knex --knexfile ./knexfile.ts migrate:make",
+    "db:migrate": "knex --knexfile ./knexfile.ts migrate:latest",
     "dev": "ts-node src/local.ts",
-    "start": "node ./dist/bin/cli.js",
+    "start": "node ./dist/src/index.js",
     "lint": "eslint . --ext=ts",
     "postinstall": "husky install",
     "test": "jest",
@@ -47,5 +49,9 @@
     "ts-node": "^9.1.1",
     "typescript": "^4.1.5"
   },
-  "dependencies": {}
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "knex": "^0.21.18",
+    "pg": "^8.5.1"
+  }
 }

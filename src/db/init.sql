@@ -1,0 +1,3 @@
+CREATE DATABASE memorygame;
+
+CREATE ROLE api WITH LOGIN PASSWORD 'yolo';
