@@ -5,43 +5,58 @@ import { snakeCase } from 'snake-case';
 const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, NODE_ENV } = process.env;
 
 const isDevelopment = NODE_ENV !== 'production';
+const isTest = NODE_ENV === 'test';
 
-const connection = knex({
-  client: 'pg',
-  debug: isDevelopment,
-  connection: {
-    host: DB_HOST,
-    port: parseInt(DB_PORT!, 10),
-    database: DB_NAME,
-    user: DB_USER,
-    password: DB_PASSWORD,
-  },
-  pool: {
-    min: 2,
-    max: 10,
+// eslint-disable-next-line import/no-mutable-exports
+let connection: ReturnType<typeof knex>;
 
-    afterCreate: (conn: any, done: any) => {
-      conn.query('select 1+1 as result', (err: any) => {
-        if (err) {
-          done(err, conn);
-        }
+if (isTest) {
+  // eslint-disable-next-line global-require, import/no-extraneous-dependencies
+  const mockDb = require('mock-knex');
 
-        done(null, conn);
-      });
+  connection = knex({
+    client: 'pg',
+  });
+
+  mockDb.mock(connection);
+} else {
+  connection = knex({
+    client: 'pg',
+    debug: isDevelopment,
+    connection: {
+      host: DB_HOST,
+      port: parseInt(DB_PORT!, 10),
+      database: DB_NAME,
+      user: DB_USER,
+      password: DB_PASSWORD,
     },
-  },
-  migrations: {
-    tableName: 'knex_migrations',
-    directory: 'migrations',
-  },
-  postProcessResponse: result => {
-    if (Array.isArray(result)) {
-      return result.map(row => camelcaseKeys(row, { deep: true }));
-    }
+    pool: {
+      min: 2,
+      max: 10,
 
-    return camelcaseKeys(result, { deep: true });
-  },
-  wrapIdentifier: (value, origImpl) => origImpl(snakeCase(value)),
-});
+      afterCreate: (conn: any, done: any) => {
+        conn.query('select 1+1 as result', (err: any) => {
+          if (err) {
+            done(err, conn);
+          }
+
+          done(null, conn);
+        });
+      },
+    },
+    migrations: {
+      tableName: 'knex_migrations',
+      directory: 'migrations',
+    },
+    postProcessResponse: result => {
+      if (Array.isArray(result)) {
+        return result.map(row => camelcaseKeys(row, { deep: true }));
+      }
+
+      return camelcaseKeys(result, { deep: true });
+    },
+    wrapIdentifier: (value, origImpl) => origImpl(snakeCase(value)),
+  });
+}
 
 export default connection;

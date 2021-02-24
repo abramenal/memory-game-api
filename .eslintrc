@@ -22,6 +22,7 @@
     "prettier/prettier": "error",
     "import/extensions": "off",
     "import/prefer-default-export": "off",
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": ["**/*.test.ts"] }],
     "no-plusplus": "off",
     "@typescript-eslint/no-unused-vars": ["error"]
   }
