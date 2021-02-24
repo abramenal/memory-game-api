@@ -2,10 +2,13 @@ import knex from 'knex';
 import camelcaseKeys from 'camelcase-keys';
 import { snakeCase } from 'snake-case';
 
-const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME } = process.env;
+const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, NODE_ENV } = process.env;
 
-export default knex({
+const isDevelopment = NODE_ENV !== 'production';
+
+const connection = knex({
   client: 'pg',
+  debug: isDevelopment,
   connection: {
     host: DB_HOST,
     port: parseInt(DB_PORT!, 10),
@@ -16,6 +19,16 @@ export default knex({
   pool: {
     min: 2,
     max: 10,
+
+    afterCreate: (conn: any, done: any) => {
+      conn.query('select 1+1 as result', (err: any) => {
+        if (err) {
+          done(err, conn);
+        }
+
+        done(null, conn);
+      });
+    },
   },
   migrations: {
     tableName: 'knex_migrations',
@@ -30,3 +43,5 @@ export default knex({
   },
   wrapIdentifier: (value, origImpl) => origImpl(snakeCase(value)),
 });
+
+export default connection;
