@@ -8,16 +8,12 @@ import { users, games } from './routes';
 import { Logger } from './logger';
 import { AppServices } from './services';
 
-type AppConfig = {
-  port: number;
-};
-
 type AppDependencies = {
   logger: Logger;
   services: AppServices;
 };
 
-export default function createApp({ port }: AppConfig, { logger, services }: AppDependencies) {
+export default function createApp({ logger, services }: AppDependencies) {
   const app = express();
 
   app.use(
@@ -33,7 +29,5 @@ export default function createApp({ port }: AppConfig, { logger, services }: App
   app.use('/users', users({ services, logger }));
   app.use('/games', games({ services, logger }));
 
-  return app.listen(port, () => {
-    logger.info(`Application is started on "${port}" port`);
-  });
+  return app;
 }

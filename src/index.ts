@@ -13,4 +13,8 @@ const logger = createLogger({ level: logLevel, isDevelopment });
 
 const services = createServices({ logger });
 
-createApp({ port: APP_PORT }, { logger, services });
+const app = createApp({ logger, services });
+
+app.listen(APP_PORT, () => {
+  logger.info(`Application is started on "${APP_PORT}" port`);
+});
