@@ -1,0 +1,139 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Memory Game API
+  contact:
+    email: pavel.auramenka@gmail.com
+basePath: /
+schemes:
+  - http
+paths:
+  /games:
+    post:
+      summary: Creates a new game
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: userId
+          type: string
+          in: body
+          required: true
+        - name: turnsAmount
+          type: integer
+          in: body
+          required: true
+      responses:
+        '200':
+          description: game created
+          schema:
+            $ref: '#/definitions/Game'
+  '/games/{gameId}/turn':
+    post:
+      summary: Submits a game turn
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: gameId
+          in: path
+          type: string
+          required: true
+        - name: userId
+          in: body
+          type: string
+          required: true
+        - name: value
+          in: body
+          type: string
+          required: true
+      responses:
+        '200':
+          description: turn submitted
+          schema:
+            $ref: '#/definitions/Game'
+
+  '/users/login':
+    post:
+      summary: Retrieves existing user info, or creates a new one
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: username
+          in: body
+          type: string
+          required: true
+      responses:
+        '200':
+          description: user retrieved
+          schema:
+            $ref: '#/definitions/User'
+
+  '/users/{userId}/history'
+    get:
+      summary: Retrieves user turns history
+      produces:
+        - application/json
+      parameters:
+        - name: username
+          in: path
+          type: string
+          required: true
+      responses:
+        '200':
+          description: user turns history
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/GameTurn'
+
+definitions:
+  Game:
+    type: object
+    properties:
+      id:
+        type: string
+      status:
+        type: string
+      sequence:
+        type: string
+      currentTurn:
+        type: integer
+      turnsTotal:
+        type: integer
+      userId:
+        type: string
+      createdAt:
+        type: number
+      updatedAt:
+        type: number
+  GameTurn:
+    type: object
+    properties:
+      id:
+        type: string
+      value:
+        type: string
+      userId:
+        type: string
+      gameId:
+        type: string
+      createdAt:
+        type: number
+      updatedAt:
+        type: number
+  User:
+    type: object
+    properties:
+      id:
+        type: string
+      username:
+        type: string
+      createdAt:
+        type: number
+      updatedAt:
+        type: number
