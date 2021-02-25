@@ -22,8 +22,8 @@ type SubmitGameTurnPayload = {
 };
 
 export type GamesService = {
-  createGame: (payload: CreateGamePayload) => Promise<Game>;
-  submitGameTurn: (payload: SubmitGameTurnPayload) => Promise<Game>;
+  createGame: (payload: CreateGamePayload) => Promise<Partial<Game>>;
+  submitGameTurn: (payload: SubmitGameTurnPayload) => Promise<Partial<Game>>;
 };
 
 type ServiceDependencies = {
@@ -34,6 +34,9 @@ export default function createService({ logger }: ServiceDependencies): GamesSer
   const createGame = async ({ turnsAmount, userId }: CreateGamePayload) => {
     const sequence = generateGameSequence(turnsAmount);
 
+    const columnInfo = await knex('games').columnInfo();
+    const columns = Object.keys(columnInfo);
+
     const game = await knex<Game>('games')
       .insert({
         status: 'started',
@@ -42,14 +45,16 @@ export default function createService({ logger }: ServiceDependencies): GamesSer
         turnsTotal: turnsAmount,
         userId,
       })
-      .returning('*');
+      .returning(columns);
 
-    return game[0];
+    return game?.[0];
   };
 
   const submitGameTurn = async ({ gameId, userId, value }: SubmitGameTurnPayload) =>
     knex.transaction(async trx => {
-      const game = await knex<Game>('games').where('game_id', gameId).where('user_id', userId).first();
+      const game = await knex<Game>('games').where('id', gameId).where('user_id', userId).first();
+      const columnInfo = await knex('games').columnInfo();
+      const columns = Object.keys(columnInfo);
 
       if (!game) {
         const message = 'Cannot find game with given attributes';
@@ -68,7 +73,6 @@ export default function createService({ logger }: ServiceDependencies): GamesSer
       await knex<GameTurn>('game_turns')
         .insert({
           value,
-          userId,
           gameId,
         })
         .transacting(trx);
@@ -96,10 +100,10 @@ export default function createService({ logger }: ServiceDependencies): GamesSer
       }
 
       const updatedGame = await knex<Game>('games')
-        .where('game_id', gameId)
+        .where('id', gameId)
         .where('user_id', userId)
         .update(fieldsToUpdate)
-        .returning('*')
+        .returning(columns)
         .transacting(trx);
 
       return updatedGame[0];
