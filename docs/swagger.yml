@@ -73,7 +73,7 @@ paths:
           schema:
             $ref: '#/definitions/User'
 
-  '/users/{userId}/history'
+  '/users/{userId}/history':
     get:
       summary: Retrieves user turns history
       produces:
