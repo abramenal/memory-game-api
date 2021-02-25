@@ -22,7 +22,7 @@ describe('/users', () => {
   describe('POST /', () => {
     it('throws if "username" is missing', done => {
       request(app)
-        .post('/users')
+        .post('/users/login')
         .send({ user: 'abramenal' })
         .set('Accept', 'application/json')
         .expect(400)
@@ -33,9 +33,22 @@ describe('/users', () => {
         });
     });
 
+    it('return existing user', done => {
+      request(app)
+        .post('/users/login')
+        .send({ username: 'test' })
+        .set('Accept', 'application/json')
+        .expect(200)
+        .then(response => {
+          expect(response.body.username).toEqual('test');
+          done();
+        })
+        .catch(err => done(err));
+    });
+
     it('return a new user', done => {
       request(app)
-        .post('/users')
+        .post('/users/login')
         .send({ username: 'abramenal' })
         .set('Accept', 'application/json')
         .expect(200)
@@ -61,24 +74,6 @@ describe('/users', () => {
               expect.objectContaining({ value: '3', status: 'completed' }),
               expect.objectContaining({ value: '4', status: 'completed' }),
             ]),
-          );
-          done();
-        })
-        .catch(err => done(err));
-    });
-  });
-
-  describe('GET /:username', () => {
-    it('returns user by username', done => {
-      request(app)
-        .get('/users/test')
-        .set('Accept', 'application/json')
-        .expect(200)
-        .then(response => {
-          expect(response.body).toEqual(
-            expect.objectContaining({
-              username: 'test',
-            }),
           );
           done();
         })

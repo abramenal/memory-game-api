@@ -28,9 +28,9 @@ export default function createGamesRouter({ services: { games } }: GamesRouterDe
       const { userId, turnsAmount } = req.body;
 
       try {
-        const user = await games.createGame({ userId, turnsAmount });
+        const newGame = await games.createGame({ userId, turnsAmount });
 
-        res.status(200).send(user);
+        res.status(200).send(newGame);
       } catch (e) {
         res.status(500).send({ error: e.message });
       }
@@ -46,9 +46,9 @@ export default function createGamesRouter({ services: { games } }: GamesRouterDe
       const { userId, value } = req.body;
 
       try {
-        const user = await games.submitGameTurn({ gameId, userId, value });
+        const updatedGame = await games.submitGameTurn({ gameId, userId, value });
 
-        res.status(200).send(user);
+        res.status(200).send(updatedGame);
       } catch (e) {
         res.status(500).send({ error: e.message });
       }

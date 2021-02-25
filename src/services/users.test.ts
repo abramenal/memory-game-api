@@ -8,13 +8,9 @@ describe('Users service', () => {
     service = createService({ logger: console });
   });
 
-  describe('createUser', () => {
-    it.todo('creates a new user');
-  });
-
-  describe('getUser', () => {
-    it.todo('throws if user is not found');
-    it.todo('returns user info');
+  describe('login', () => {
+    it.todo('creates a new user if it is not existing');
+    it.todo('retrieves existing user info');
   });
 
   describe('getGamesHistory', () => {

@@ -2,8 +2,6 @@ import express from 'express';
 import { ValidatedRequest, createValidator } from 'express-joi-validation';
 
 import {
-  GetUsersParamsSchema,
-  GetUsersRequest,
   CreateUserPayloadSchema,
   CreateUserRequest,
   GetUserHistoryParamsSchema,
@@ -22,30 +20,14 @@ export default function createUsersRouter({ services: { users } }: UsersRouterDe
   const usersRouter = express.Router();
   const validator = createValidator();
 
-  usersRouter.get(
-    '/:username',
-    validator.params(GetUsersParamsSchema),
-    async (req: ValidatedRequest<GetUsersRequest>, res) => {
-      const { username } = req.params;
-
-      try {
-        const user = await users.getUser({ username });
-
-        res.status(200).send(user);
-      } catch (e) {
-        res.status(500).send({ error: e.message });
-      }
-    },
-  );
-
   usersRouter.post(
-    '/',
+    '/login',
     validator.body(CreateUserPayloadSchema),
     async (req: ValidatedRequest<CreateUserRequest>, res) => {
       const { username } = req.body;
 
       try {
-        const user = await users.createUser({ username });
+        const user = await users.login({ username });
 
         res.status(200).send(user);
       } catch (e) {
