@@ -2,61 +2,44 @@ import knex from 'knex';
 import camelcaseKeys from 'camelcase-keys';
 import { snakeCase } from 'snake-case';
 
-const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, NODE_ENV } = process.env;
+import { POSTGRES_HOST, POSTGRES_PORT, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, NODE_ENV } from '../bootstrap';
 
-const isDevelopment = NODE_ENV !== 'production';
-const isTest = NODE_ENV === 'test';
+const isDevelopment = NODE_ENV === 'development';
 
-// eslint-disable-next-line import/no-mutable-exports
-let connection: ReturnType<typeof knex>;
+export default knex({
+  client: 'pg',
+  debug: isDevelopment,
+  connection: {
+    host: POSTGRES_HOST,
+    port: POSTGRES_PORT,
+    database: POSTGRES_DB,
+    user: POSTGRES_USER,
+    password: POSTGRES_PASSWORD,
+  },
+  pool: {
+    min: 2,
+    max: 10,
 
-if (isTest) {
-  // eslint-disable-next-line global-require, import/no-extraneous-dependencies
-  const mockDb = require('mock-knex');
+    afterCreate: (conn: any, done: any) => {
+      conn.query('select 1+1 as result', (err: any) => {
+        if (err) {
+          done(err, conn);
+        }
 
-  connection = knex({
-    client: 'pg',
-  });
-
-  mockDb.mock(connection);
-} else {
-  connection = knex({
-    client: 'pg',
-    debug: isDevelopment,
-    connection: {
-      host: DB_HOST,
-      port: parseInt(DB_PORT!, 10),
-      database: DB_NAME,
-      user: DB_USER,
-      password: DB_PASSWORD,
+        done(null, conn);
+      });
     },
-    pool: {
-      min: 2,
-      max: 10,
+  },
+  migrations: {
+    tableName: 'knex_migrations',
+    directory: 'migrations',
+  },
+  postProcessResponse: result => {
+    if (Array.isArray(result)) {
+      return result.map(row => camelcaseKeys(row, { deep: true }));
+    }
 
-      afterCreate: (conn: any, done: any) => {
-        conn.query('select 1+1 as result', (err: any) => {
-          if (err) {
-            done(err, conn);
-          }
-
-          done(null, conn);
-        });
-      },
-    },
-    migrations: {
-      tableName: 'knex_migrations',
-      directory: 'migrations',
-    },
-    postProcessResponse: result => {
-      if (Array.isArray(result)) {
-        return result.map(row => camelcaseKeys(row, { deep: true }));
-      }
-
-      return camelcaseKeys(result, { deep: true });
-    },
-    wrapIdentifier: (value, origImpl) => origImpl(snakeCase(value)),
-  });
-}
-
-export default connection;
+    return camelcaseKeys(result, { deep: true });
+  },
+  wrapIdentifier: (value, origImpl) => origImpl(snakeCase(value)),
+});

@@ -14,14 +14,14 @@ export async function up(knex: Knex): Promise<void> {
     table.enu('status', ['started', 'completed', 'failed']).defaultTo('started').notNullable();
     table.string('sequence').notNullable();
     table.integer('current_step').unsigned().defaultTo('0').notNullable();
-    table.uuid('user_id').references('users.id').notNullable();
+    table.uuid('user_id').references('users.id').notNullable().onDelete('CASCADE');
     table.timestamps(true, true);
   });
 
   await knex.schema.createTable('game_turns', table => {
     table.uuid('id').primary().defaultTo(knex.raw('uuid_generate_v4()'));
     table.string('value').notNullable();
-    table.uuid('game_id').references('games.id').notNullable();
+    table.uuid('game_id').references('games.id').notNullable().onDelete('CASCADE');
     table.timestamps(true, true);
   });
 }

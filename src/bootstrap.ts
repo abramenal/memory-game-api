@@ -1,13 +1,28 @@
+import path from 'path';
 import dotenv from 'dotenv';
 
-dotenv.config();
+if (process.env.NODE_ENV === 'test') {
+  dotenv.config({ path: path.resolve(process.cwd(), '.env.test') });
+} else {
+  dotenv.config();
+}
 
-const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, NODE_ENV } = process.env;
-const DB_PORT = parseInt(process.env.DB_PORT!, 10);
+const { POSTGRES_HOST, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, NODE_ENV } = process.env;
+const POSTGRES_PORT = parseInt(process.env.POSTGRES_PORT!, 10);
 const APP_PORT = parseInt(process.env.APP_PORT!, 10);
 
-if (!DB_HOST || !DB_USER || !DB_PASSWORD || !DB_NAME || !NODE_ENV || !DB_PORT || !APP_PORT) {
+const missing = [
+  POSTGRES_HOST,
+  POSTGRES_USER,
+  POSTGRES_PASSWORD,
+  POSTGRES_DB,
+  NODE_ENV,
+  POSTGRES_PORT,
+  APP_PORT,
+].filter(v => !v);
+
+if (missing.length > 0) {
   throw new Error('Application ENV variables are not set properly');
 }
 
-export { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, APP_PORT, NODE_ENV };
+export { POSTGRES_HOST, POSTGRES_PORT, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, APP_PORT, NODE_ENV };

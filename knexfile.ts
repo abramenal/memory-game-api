@@ -1,17 +1,22 @@
+import path from 'path';
 import dotenv from 'dotenv';
 
-dotenv.config();
+if (process.env.NODE_ENV === 'test') {
+  dotenv.config({ path: path.resolve(process.cwd(), '.env.test') });
+} else {
+  dotenv.config();
+}
 
-const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME } = process.env;
+const { POSTGRES_HOST, POSTGRES_PORT, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB } = process.env;
 
 export default {
   client: 'pg',
   connection: {
-    host: DB_HOST,
-    port: parseInt(DB_PORT!, 10),
-    database: DB_NAME,
-    user: DB_USER,
-    password: DB_PASSWORD,
+    host: POSTGRES_HOST,
+    port: parseInt(POSTGRES_PORT!, 10),
+    database: POSTGRES_DB,
+    user: POSTGRES_USER,
+    password: POSTGRES_PASSWORD,
   },
   pool: {
     min: 2,
@@ -21,5 +26,7 @@ export default {
     tableName: 'knex_migrations',
     directory: 'migrations',
   },
-  timezone: 'UTC',
+  seeds: {
+    directory: 'seeds',
+  },
 };
