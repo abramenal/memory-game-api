@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import winston from 'winston';
 import expressWinston from 'express-winston';
+import cors from 'cors';
 
 import { users, games } from './routes';
 
@@ -24,6 +25,7 @@ export default function createApp({ logger, services }: AppDependencies) {
       colorize: true,
     }),
   );
+  app.use(cors());
   app.use(bodyParser.json());
 
   app.use('/users', users({ services, logger }));
