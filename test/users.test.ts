@@ -3,12 +3,7 @@ import request from 'supertest';
 import connection from '../src/db/connection';
 import createApp from '../src/app';
 import createServices from '../src/services';
-
-const logger = {
-  info: jest.fn(),
-  warn: jest.fn(),
-  error: jest.fn(),
-};
+import logger from '../src/__mocks__/logger';
 
 const services = createServices({ logger });
 
