@@ -1,6 +1,6 @@
 import knex from '../db/connection';
 import createService, { GamesService } from './games';
-import logger from '../__mocks__/logger';
+import logger from '../../test/__mocks__/logger';
 
 describe('Games service', () => {
   let service: GamesService;

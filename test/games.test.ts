@@ -3,7 +3,7 @@ import request from 'supertest';
 import connection from '../src/db/connection';
 import createApp from '../src/app';
 import createServices from '../src/services';
-import logger from '../src/__mocks__/logger';
+import logger from './__mocks__/logger';
 
 const services = createServices({ logger });
 

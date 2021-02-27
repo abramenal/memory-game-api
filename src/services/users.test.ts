@@ -1,6 +1,6 @@
 import createService, { UsersService } from './users';
 import knex from '../db/connection';
-import logger from '../__mocks__/logger';
+import logger from '../../test/__mocks__/logger';
 
 describe('Users service', () => {
   let service: UsersService;
