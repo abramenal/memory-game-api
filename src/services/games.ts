@@ -6,8 +6,22 @@ import { getRandomInt } from '../helpers';
 import { Logger } from '../logger';
 
 const orderSequence = (sequence: number[]) => sequence.map(v => v).sort((a, b) => a - b);
-const generateGameSequence = (turnsAmount: number) =>
-  new Array(turnsAmount).fill(0).map(() => getRandomInt(TURN_MAX_INTEGER));
+const generateGameSequence = (turnsAmount: number) => {
+  const sequence: number[] = [];
+  let retry = 0;
+  const MAX_RETRIES = turnsAmount * 5;
+
+  while (sequence.length < turnsAmount || retry < MAX_RETRIES) {
+    const r = getRandomInt(TURN_MAX_INTEGER);
+    if (sequence.indexOf(r) === -1) {
+      sequence.push(r);
+    }
+
+    retry += 1;
+  }
+
+  return sequence;
+};
 
 type CreateGamePayload = {
   turnsAmount: number;
