@@ -9,7 +9,7 @@ export default async function checkConnection(logger: Logger) {
       await connection.raw('SELECT 1+1 as result');
     },
     {
-      retries: 5,
+      retries: 3,
       onRetry: () => {
         logger.warn('Cannot establish DB connection, retrying...');
       },

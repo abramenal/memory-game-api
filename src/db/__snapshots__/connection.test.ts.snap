@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`connection matches the snapshot 1`] = `
+Object {
+  "client": "pg",
+  "connection": Object {
+    "database": "POSTGRES_DB",
+    "host": "POSTGRES_HOST",
+    "password": "POSTGRES_PASSWORD",
+    "port": "POSTGRES_PORT",
+    "user": "POSTGRES_USER",
+  },
+  "debug": false,
+  "migrations": Object {
+    "directory": "migrations",
+    "tableName": "knex_migrations",
+  },
+  "pool": Object {
+    "max": 10,
+    "min": 2,
+  },
+  "postProcessResponse": [Function],
+  "wrapIdentifier": [Function],
+}
+`;

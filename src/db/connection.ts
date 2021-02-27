@@ -19,16 +19,6 @@ export default knex({
   pool: {
     min: 2,
     max: 10,
-
-    afterCreate: (conn: any, done: any) => {
-      conn.query('select 1+1 as result', (err: any) => {
-        if (err) {
-          done(err, conn);
-        }
-
-        done(null, conn);
-      });
-    },
   },
   migrations: {
     tableName: 'knex_migrations',
