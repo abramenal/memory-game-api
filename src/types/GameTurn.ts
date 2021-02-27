@@ -1,7 +1,7 @@
 import { Entity } from './Entity';
 
 export type GameTurn = Entity & {
-  value: string;
+  value: number;
   userId: string;
   gameId: string;
 };

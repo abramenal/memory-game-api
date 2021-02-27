@@ -5,8 +5,7 @@ import { TURN_MAX_INTEGER } from '../constants';
 import { getRandomInt } from '../helpers';
 import { Logger } from '../logger';
 
-const GAME_SEQUENCE_SEPARATOR = ',';
-
+const orderSequence = (sequence: number[]) => sequence.map(v => v).sort((a, b) => a - b);
 const generateGameSequence = (turnsAmount: number) =>
   new Array(turnsAmount).fill(0).map(() => getRandomInt(TURN_MAX_INTEGER));
 
@@ -16,7 +15,7 @@ type CreateGamePayload = {
 };
 
 type SubmitGameTurnPayload = {
-  value: string;
+  value: number;
   gameId: string;
   userId: string;
 };
@@ -33,6 +32,7 @@ type ServiceDependencies = {
 export default function createService({ logger }: ServiceDependencies): GamesService {
   const createGame = async ({ turnsAmount, userId }: CreateGamePayload) => {
     const sequence = generateGameSequence(turnsAmount);
+    const sequenceOrdered = orderSequence(sequence);
 
     const columnInfo = await knex('games').columnInfo();
     const columns = Object.keys(columnInfo);
@@ -40,14 +40,17 @@ export default function createService({ logger }: ServiceDependencies): GamesSer
     const game = await knex<Game>('games')
       .insert({
         status: 'started',
-        sequence: sequence.join(GAME_SEQUENCE_SEPARATOR),
+        sequence: sequenceOrdered,
         currentTurn: 0,
         turnsTotal: turnsAmount,
         userId,
       })
       .returning(columns);
 
-    return game?.[0];
+    return {
+      ...game[0],
+      sequence, // expose only unordered
+    };
   };
 
   const submitGameTurn = async ({ gameId, userId, value }: SubmitGameTurnPayload) =>
@@ -77,8 +80,7 @@ export default function createService({ logger }: ServiceDependencies): GamesSer
         })
         .transacting(trx);
 
-      const sequence = game.sequence.split(GAME_SEQUENCE_SEPARATOR);
-      const correctTurnValue = sequence[game.currentTurn];
+      const correctTurnValue = game.sequence[game.currentTurn];
 
       let fieldsToUpdate: Pick<Game, 'status' | 'currentTurn'>;
 

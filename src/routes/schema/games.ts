@@ -15,7 +15,7 @@ export interface CreateGameRequest extends ValidatedRequestSchema {
 
 export const CreateTurnPayloadSchema = Joi.object({
   userId: Joi.string().required(),
-  value: Joi.string().required(),
+  value: Joi.number().required(),
 });
 
 export const CreateTurnParamsSchema = Joi.object({
@@ -28,6 +28,6 @@ export interface CreateTurnRequest extends ValidatedRequestSchema {
   };
   [ContainerTypes.Body]: {
     userId: string;
-    value: string;
+    value: number;
   };
 }
