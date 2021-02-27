@@ -1,5 +1,5 @@
 import knex from '../db/connection';
-import { Game, GameTurn, User } from '../types';
+import { GameHistory, GameStatus, User } from '../types';
 import { Logger } from '../logger';
 
 type CreateOrGetUserPayload = {
@@ -12,7 +12,7 @@ type GetGamesHistoryPayload = {
 
 export type UsersService = {
   login: (payload: CreateOrGetUserPayload) => Promise<User>;
-  getGamesHistory: (payload: GetGamesHistoryPayload) => Promise<(Game & GameTurn)[]>;
+  getGamesHistory: (payload: GetGamesHistoryPayload) => Promise<GameHistory[]>;
 };
 
 type ServiceDependencies = {
@@ -20,7 +20,10 @@ type ServiceDependencies = {
 };
 
 export default function createService({ logger }: ServiceDependencies): UsersService {
-  const login = async ({ username }: CreateOrGetUserPayload): Promise<User> => {
+  const login = async ({ username }: CreateOrGetUserPayload) => {
+    const columnInfo = await knex('users').columnInfo();
+    const columns = Object.keys(columnInfo);
+
     const found = await knex<User>('users').where('username', username).first();
 
     if (found) {
@@ -33,15 +36,77 @@ export default function createService({ logger }: ServiceDependencies): UsersSer
       .insert({
         username,
       })
-      .returning(['id', 'username', 'createdAt', 'updatedAt']);
-    return res[0];
+      .returning(columns);
+
+    return res[0] as User;
   };
 
-  const getGamesHistory = async ({ userId }: GetGamesHistoryPayload): Promise<(Game & GameTurn)[]> =>
-    knex<Game>('games')
+  type GameHistoryRecord = {
+    id: string;
+    status: GameStatus;
+    sequence: number[];
+    currentTurn: number;
+    turnsTotal: number;
+    userId: string;
+    createdAt: string;
+    turnId: string;
+    turnValue: number;
+    turnCreatedAt: string;
+  };
+
+  const getGamesHistory = async ({ userId }: GetGamesHistoryPayload): Promise<GameHistory[]> => {
+    const res = await knex<GameHistoryRecord>('games')
       .where('user_id', userId)
       .join('game_turns', 'games.id', 'game_turns.game_id')
-      .select(['game_turns.id', 'game_turns.value', 'game_turns.game_id', 'games.user_id', 'games.status']);
+      .select({
+        id: 'games.id',
+        status: 'games.status',
+        sequence: 'games.sequence',
+        currentTurn: 'games.currentTurn',
+        turnsTotal: 'games.turnsTotal',
+        userId: 'games.userId',
+        createdAt: 'games.createdAt',
+        turnId: 'game_turns.id',
+        turnValue: 'game_turns.value',
+        turnCreatedAt: 'game_turns.createdAt',
+      })
+      .orderBy([
+        { column: 'games.createdAt', order: 'DESC' },
+        { column: 'game_turns.createdAt', order: 'ASC' },
+      ]);
+
+    const mapped = res.reduce((acc: { [key: string]: GameHistory }, item: GameHistoryRecord) => {
+      const { id, status, sequence, currentTurn, turnsTotal, createdAt, ...turn } = item;
+      const { turnId, turnValue, turnCreatedAt } = turn;
+
+      const turnEntity = {
+        id: turnId,
+        value: turnValue,
+        userId,
+        gameId: id,
+        createdAt: turnCreatedAt,
+      };
+
+      if (!acc[id]) {
+        acc[id] = {
+          id,
+          userId,
+          status,
+          sequence,
+          currentTurn,
+          turnsTotal,
+          createdAt,
+          turns: [turnEntity],
+        };
+      } else {
+        acc[id].turns.push(turnEntity);
+      }
+
+      return acc;
+    }, {});
+
+    return Object.values(mapped);
+  };
 
   return {
     login,

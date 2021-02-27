@@ -1,3 +1,3 @@
 export * from './Game';
-export * from './GameTurn';
+export * from './GameHistory';
 export * from './User';
