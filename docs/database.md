@@ -4,9 +4,13 @@ For this type of requirements I feel almost any approach would work, honestly :n
 
 I have considered MongoDB and PostgreSQL, and the first one would be even a bit faster to do. But I would still go with the latter as this is your tech stack.
 
-Here is [the initial data model design](https://dbdiagram.io/d/603566aefcdcb6230b2129f8)
+Here is [the initial data model design](https://dbdiagram.io/d/603abfecfcdcb6230b21ce01):
 
 ![](./db.png 'DB Scheme')
+
+At the end it slightly changed [it slightly changed](https://dbdiagram.io/d/603566aefcdcb6230b2129f8):
+
+![](./db_final.png 'DB Scheme (final)')
 
 ## Choosing proper toolset
 
