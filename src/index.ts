@@ -14,7 +14,7 @@ const logger = createLogger({ level: logLevel, isDevelopment });
 
 const services = createServices({ logger });
 
-const app = createApp({ logger, services });
+const app = createApp({ logger, services }, { useHTTPLogger: true });
 
 app.listen(APP_PORT, () => {
   logger.info(`Application is started on "${APP_PORT}" port`);

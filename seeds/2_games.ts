@@ -29,7 +29,23 @@ export async function seed(knex: Knex): Promise<void> {
       user_id: 'ee0e8b34-b2d3-4fba-bb48-d56d14a9aabc',
     },
     {
+      id: '9441ed8e-c82a-4cdc-9f1c-7f2fb73d3c11',
+      status: 'started',
+      sequence: [10, 20, 30, 40],
+      current_turn: 3,
+      turns_total: 4,
+      user_id: 'ee0e8b34-b2d3-4fba-bb48-d56d14a9aabc',
+    },
+    {
       id: '037d4554-51d4-4004-b6dd-5c772644c9cf',
+      status: 'started',
+      sequence: [6, 7, 8, 9],
+      current_turn: 0,
+      turns_total: 4,
+      user_id: 'ee0e8b34-b2d3-4fba-bb48-d56d14a9aabc',
+    },
+    {
+      id: '78b6aebc-9116-44bf-95e4-b99e5bfa7aec',
       status: 'started',
       sequence: [6, 7, 8, 9],
       current_turn: 0,

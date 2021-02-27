@@ -9,22 +9,29 @@ import { users, games } from './routes';
 import { Logger } from './logger';
 import { AppServices } from './services';
 
+type AppConfiguration = {
+  useHTTPLogger: boolean;
+};
+
 type AppDependencies = {
   logger: Logger;
   services: AppServices;
 };
 
-export default function createApp({ logger, services }: AppDependencies) {
+export default function createApp({ logger, services }: AppDependencies, { useHTTPLogger }: AppConfiguration) {
   const app = express();
 
-  app.use(
-    expressWinston.logger({
-      transports: [new winston.transports.Console()],
-      format: winston.format.combine(winston.format.colorize(), winston.format.json()),
-      meta: true,
-      colorize: true,
-    }),
-  );
+  if (useHTTPLogger) {
+    app.use(
+      expressWinston.logger({
+        transports: [new winston.transports.Console()],
+        format: winston.format.combine(winston.format.colorize(), winston.format.json()),
+        meta: true,
+        colorize: true,
+      }),
+    );
+  }
+
   app.use(cors());
   app.use(bodyParser.json());
 
