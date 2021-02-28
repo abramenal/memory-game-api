@@ -11,7 +11,7 @@ const generateGameSequence = (turnsAmount: number) => {
   let retry = 0;
   const MAX_RETRIES = turnsAmount * 5;
 
-  while (sequence.length < turnsAmount || retry < MAX_RETRIES) {
+  while (sequence.length < turnsAmount && retry < MAX_RETRIES) {
     const r = getRandomInt(TURN_MAX_INTEGER);
     if (sequence.indexOf(r) === -1) {
       sequence.push(r);
