@@ -33,7 +33,7 @@ jobs:
       - run: npm run lint
       - run: npm run test:coverage
         env:
-          APP_PORT: 3000
+          PORT: 3000
           NODE_ENV: test
           POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432

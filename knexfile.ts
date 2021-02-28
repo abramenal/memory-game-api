@@ -12,6 +12,7 @@ const { POSTGRES_HOST, POSTGRES_PORT, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES
 export default {
   client: 'pg',
   connection: {
+    ssl: true,
     host: POSTGRES_HOST,
     port: parseInt(POSTGRES_PORT!, 10),
     database: POSTGRES_DB,
